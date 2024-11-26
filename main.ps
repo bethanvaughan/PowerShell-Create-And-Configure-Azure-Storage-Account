@@ -96,3 +96,25 @@ New-AzStorageAccount `
 
 Write-Host "Storage Account '$storageAccountName' created successfully." -ForegroundColor Green
 
+# Configure network rules
+Write-Host "Configuring network rules for Storage Account '$storageAccountName'..."
+$allowBypass = PromptForInput -Message "Enter the bypass options (AzureServices, Logging, Metrics, None)" -Default "AzureServices"
+$defaultAction = PromptForInput -Message "Enter the default action (Allow or Deny)" -Default "Deny"
+Set-AzStorageAccountNetworkRuleSet `
+    -ResourceGroupName $resourceGroupName `
+    -Name $storageAccountName `
+    -DefaultAction $defaultAction `
+    -Bypass $allowBypass
+
+Write-Host "Network rules configured successfully for Storage Account '$storageAccountName'." -ForegroundColor Green
+
+# Configure Blob Service properties
+Write-Host "Configuring Blob Service properties for Storage Account '$storageAccountName'..."
+$deleteRetentionDays = [int](PromptForInput -Message "Enter the number of days for delete retention policy (0 to disable)" -Default "7")
+Set-AzStorageBlobServiceProperty `
+    -ResourceGroupName $resourceGroupName `
+    -AccountName $storageAccountName `
+    -DeleteRetentionDays $deleteRetentionDays
+
+Write-Host "Blob Service properties configured successfully for Storage Account '$storageAccountName'." -ForegroundColor Green
+
